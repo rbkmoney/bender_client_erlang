@@ -1,6 +1,6 @@
 -module(bender_msgp_marshalling).
 
--include_lib("msgpack_proto/include/msgpack_thrift.hrl").
+-include_lib("bender_proto/include/msgpack_thrift.hrl").
 
 %% API
 -export([marshal/1]).

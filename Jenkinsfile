@@ -7,7 +7,7 @@ def finalHook = {
   }
 }
 
-build('erlang_uac', 'docker-host', finalHook) {
+build('bender_client_erlang', 'docker-host', finalHook) {
   checkoutRepo()
   loadBuildUtils()
 

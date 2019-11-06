@@ -6,7 +6,6 @@
         kernel,
         stdlib,
         genlib,
-        msgpack_proto,
         bender_proto,
         woody
     ]},
