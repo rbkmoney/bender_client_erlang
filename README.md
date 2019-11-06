@@ -1,1 +1,3 @@
-# bender_client_erlang
+# Bender client erlang
+
+Клиент для сервиса Bender
