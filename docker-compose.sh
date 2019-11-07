@@ -15,15 +15,6 @@ services:
         condition: service_healthy
     mem_limit: 256M
 
-  bender:
-    image: dr2.rbkmoney.com/rbkmoney/bender:2fcb2711d3d0adec0685926dafdab832b7506091
-    command: /opt/bender/bin/bender foreground
-    healthcheck:
-      test: "curl http://localhost:8022/"
-      interval: 5s
-      timeout: 1s
-      retries: 20
-
   machinegun:
     image: dr2.rbkmoney.com/rbkmoney/machinegun:aec434f47029dbd81762e10de04c9422e3c93e5e
     command: /opt/machinegun/bin/machinegun foreground
@@ -34,5 +25,15 @@ services:
       interval: 5s
       timeout: 1s
       retries: 20
-EOF
 
+  bender:
+    image: dr2.rbkmoney.com/rbkmoney/bender:2fcb2711d3d0adec0685926dafdab832b7506091
+    command: /opt/bender/bin/bender foreground
+    healthcheck:
+      test: "curl http://localhost:8022/"
+      interval: 5s
+      timeout: 1s
+      retries: 20
+    depends_on:
+      - machinegun
+EOF

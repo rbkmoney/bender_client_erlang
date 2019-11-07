@@ -38,17 +38,16 @@ groups() ->
 -spec init_per_suite(config()) ->
     config().
 init_per_suite(Config) ->
-    Apps = genlib_app:start_application(woody),
-    Env = application:get_all_env(),
-    _ = application:set_env(Env ++ [{bender_client_woody, [
-        {url, <<"http://bender:8022/v1/bender">>},
-        {deadline, 10000},
-        {retries, #{
-            'GenerateID' => finish,
-            'GetInternalID' => finish,
-            '_' => finish
-        }}
-    ]}]),
+    Apps =
+        genlib_app:start_application_with(bender_client, [
+            {service_url, <<"http://bender:8022/v1/bender">>},
+            {deadline, 10000},
+            {retries, #{
+                'GenerateID' => finish,
+                'GetInternalID' => finish,
+                '_' => finish
+            }}
+        ]),
     [{apps, Apps}] ++ Config.
 
 -spec end_per_suite(config()) ->

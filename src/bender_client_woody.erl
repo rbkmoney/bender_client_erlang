@@ -2,6 +2,8 @@
 
 -export([call/3]).
 
+-define(APP, bender_client).
+
 %%
 -type client_opts() :: #{
     url            := woody:url(),
@@ -41,7 +43,7 @@ call(Function, Args, Context, EventHandler, Retry) ->
     client_opts().
 
 get_service_options() ->
-    construct_opts(genlib_app:env(?MODULE, url)).
+    construct_opts(genlib_app:env(?APP, service_url)).
 
 construct_opts(Opts = #{url := Url}) ->
     Opts#{url := genlib:to_binary(Url)};
@@ -70,7 +72,7 @@ apply_retry_step({wait, Timeout, Retry}, Deadline0, Error) ->
     end.
 
 get_service_deadline() ->
-    case genlib_app:env(?MODULE, deadline, undefined) of
+    case genlib_app:env(?APP, deadline, undefined) of
         Timeout when is_integer(Timeout) andalso Timeout >= 0 ->
             woody_deadline:from_timeout(Timeout);
         undefined ->
@@ -86,6 +88,6 @@ set_deadline(Deadline, Context) ->
     end.
 
 get_service_retry(Function) ->
-    FunctionReties = genlib_app:env(?MODULE, retries, #{}),
+    FunctionReties = genlib_app:env(?APP, retries, #{}),
     DefaultRetry = maps:get('_', FunctionReties, finish),
     maps:get(Function, FunctionReties, DefaultRetry).
