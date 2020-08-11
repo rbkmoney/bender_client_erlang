@@ -24,14 +24,14 @@
 -define(SCHEMA_VER1, 1).
 
 -spec gen_by_snowflake(binary(), integer(), woody_context()) ->
-    {ok,    binary() | {binary() | integer()}} |
+    {ok,    {binary(), integer() | undefined}} |
     {error, {external_id_conflict, binary()}}.
 
 gen_by_snowflake(IdempotentKey, Hash, WoodyContext) ->
     gen_by_snowflake(IdempotentKey, Hash, WoodyContext, #{}).
 
 -spec gen_by_snowflake(binary(), integer(), woody_context(), context_data()) ->
-    {ok,    binary() | {binary() | integer()}} |
+    {ok,    {binary(), integer() | undefined}} |
     {error, {external_id_conflict, binary()}}.
 
 gen_by_snowflake(IdempotentKey, Hash, WoodyContext, CtxData) ->
@@ -39,21 +39,21 @@ gen_by_snowflake(IdempotentKey, Hash, WoodyContext, CtxData) ->
     generate_id(IdempotentKey, Snowflake, Hash, WoodyContext, CtxData).
 
 -spec gen_by_sequence(binary(), binary(), integer(), woody_context()) ->
-    {ok,    binary() | {binary() | integer()}} |
+    {ok,    {binary(), integer() | undefined}} |
     {error, {external_id_conflict, binary()}}.
 
 gen_by_sequence(IdempotentKey, SequenceID, Hash, WoodyContext) ->
     gen_by_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, #{}).
 
 -spec gen_by_sequence(binary(), binary(), integer(), woody_context(), context_data()) ->
-    {ok,    binary() | {binary() | integer()}} |
+    {ok,    {binary(), integer() | undefined}} |
     {error, {external_id_conflict, binary()}}.
 
 gen_by_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData) ->
     gen_by_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData, #{}).
 
 -spec gen_by_sequence(binary(), binary(), integer(), woody_context(), context_data(), sequence_params()) ->
-    {ok,    binary() | {binary() | integer()}} |
+    {ok,    {binary(), integer() | undefined}} |
     {error, {external_id_conflict, binary()}}.
 
 gen_by_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData, Params) ->
@@ -66,14 +66,14 @@ gen_by_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData, Params) 
 
 
 -spec gen_by_constant(binary(), binary(), integer(), woody_context()) ->
-    {ok,    binary() | {binary() | integer()}} |
+    {ok,    {binary(), integer() | undefined}} |
     {error, {external_id_conflict, binary()}}.
 
 gen_by_constant(IdempotentKey, ConstantID, Hash, WoodyContext) ->
     gen_by_constant(IdempotentKey, ConstantID, Hash, WoodyContext, #{}).
 
 -spec gen_by_constant(binary(), binary(), integer(), woody_context(), context_data()) ->
-    {ok,    binary() | {binary() | integer()}} |
+    {ok,    {binary(), integer() | undefined}} |
     {error, {external_id_conflict, binary()}}.
 
 gen_by_constant(IdempotentKey, ConstantID, Hash, WoodyContext, CtxData) ->
@@ -91,7 +91,7 @@ get_idempotent_key(Domain, Prefix, PartyID, ExternalID) ->
     <<Domain/binary, "/", Prefix/binary, "/", PartyID/binary, "/", ExternalID/binary>>.
 
 -spec get_internal_id(binary(), woody_context()) ->
-    {ok,    binary() | {binary() | integer()}, context_data()} |
+    {ok,    {binary(), integer() | undefined}} |
     {error, internal_id_not_found}.
 
 get_internal_id(ExternalID, WoodyContext) ->
@@ -129,23 +129,10 @@ generate_id(Key, BenderSchema, Hash, WoodyContext, CtxData) ->
     Result = case bender_client_woody:call('GenerateID', Args, WoodyContext) of
         {ok, #bender_GenerationResult{
             internal_id = InternalID,
-            integer_internal_id = undefined,
-            context = undefined
-        }} ->
-            {ok, InternalID};
-        {ok, #bender_GenerationResult{
-            internal_id = InternalID,
             integer_internal_id = IntegerInternalID,
             context = undefined
         }} ->
             {ok, {InternalID, IntegerInternalID}};
-        {ok, #bender_GenerationResult{
-            internal_id = InternalID,
-            integer_internal_id = undefined,
-            context = Ctx
-        }}       ->
-            #{<<"params_hash">> := BenderHash} = bender_msgp_marshalling:unmarshal(Ctx),
-            {ok, InternalID, BenderHash};
         {ok, #bender_GenerationResult{
             internal_id = InternalID,
             integer_internal_id = IntegerInternalID,
