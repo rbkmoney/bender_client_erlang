@@ -91,18 +91,11 @@ get_idempotent_key(Domain, Prefix, PartyID, ExternalID) ->
     <<Domain/binary, "/", Prefix/binary, "/", PartyID/binary, "/", ExternalID/binary>>.
 
 -spec get_internal_id(binary(), woody_context()) ->
-    {ok,    {binary(), integer() | undefined}} |
+    {ok,    {binary(), integer() | undefined}, context_data()} |
     {error, internal_id_not_found}.
 
 get_internal_id(ExternalID, WoodyContext) ->
     case bender_client_woody:call('GetInternalID', [ExternalID], WoodyContext) of
-        {ok, #bender_GetInternalIDResult{
-            internal_id = InternalID,
-            integer_internal_id = undefined,
-            context = Context
-        }} ->
-            UnmarshaledCtx = bender_msgp_marshalling:unmarshal(Context),
-            {ok, InternalID, get_context_data(UnmarshaledCtx)};
         {ok, #bender_GetInternalIDResult{
             internal_id = InternalID,
             integer_internal_id = IntegerInternalID,
