@@ -65,14 +65,14 @@ end_per_suite(Config) ->
 gen_internal_id(_) ->
     WoodyContext = woody_context:new(),
     IdempotentKey = get_idempotent_key(?EXTERNAL_ID),
-    {ok, <<"1">>} = bender_client:gen_by_sequence(IdempotentKey, <<"SEQ">>, <<"HASH">>, WoodyContext).
+    {ok, {<<"1">>, 1}} = bender_client:gen_by_sequence(IdempotentKey, <<"SEQ">>, <<"HASH">>, WoodyContext).
 
 -spec get_internal_id(config()) ->
     _.
 get_internal_id(_) ->
     WoodyContext = woody_context:new(),
     IdempotentKey = get_idempotent_key(?EXTERNAL_ID),
-    {ok, <<"1">>, _} = bender_client:get_internal_id(IdempotentKey, WoodyContext).
+    {ok, {<<"1">>, 1}, _} = bender_client:get_internal_id(IdempotentKey, WoodyContext).
 
 get_idempotent_key(ExternalID) ->
     bender_client:get_idempotent_key(<<"domain">>, <<"prefix">>, <<"party">>, ExternalID).
