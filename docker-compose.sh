@@ -27,7 +27,7 @@ services:
       retries: 20
 
   bender:
-    image: dr2.rbkmoney.com/rbkmoney/bender:2fcb2711d3d0adec0685926dafdab832b7506091
+    image: dr2.rbkmoney.com/rbkmoney/bender:90ca71b80ac280ed205d0568e214c7524e6cb328
     command: /opt/bender/bin/bender foreground
     healthcheck:
       test: "curl http://localhost:8022/"
