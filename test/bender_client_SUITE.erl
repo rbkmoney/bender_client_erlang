@@ -11,7 +11,10 @@
 
 -export([
     gen_internal_id/1,
-    get_internal_id/1
+    get_internal_id/1,
+    snowflake/1,
+    sequence /1,
+    constant /1
 ]).
 
 -type test_case_name()  :: atom().
@@ -20,7 +23,8 @@
     [test_case_name()].
 all() ->
     [
-        {group, all_tests}
+        {group, all_tests},
+        {group, no_external_id}
     ].
 
 -spec groups() -> [{atom(), list(), [test_case_name()]}].
@@ -29,6 +33,11 @@ groups() ->
         {all_tests, [sequence], [
             gen_internal_id,
             get_internal_id
+        ]},
+        {no_external_id, [], [
+            snowflake,
+            sequence,
+            constant
         ]}
     ].
 
@@ -40,7 +49,10 @@ groups() ->
 init_per_suite(Config) ->
     Apps =
         genlib_app:start_application_with(bender_client, [
-            {service_url, <<"http://bender:8022/v1/bender">>},
+            {services, #{
+                'Bender' => <<"http://bender:8022/v1/bender">>,
+                'Generator' => <<"http://bender:8022/v1/generator">>
+            }},
             {deadline, 10000},
             {retries, #{
                 'GenerateID' => finish,
@@ -73,6 +85,31 @@ get_internal_id(_) ->
     WoodyContext = woody_context:new(),
     IdempotentKey = get_idempotent_key(?EXTERNAL_ID),
     {ok, {<<"1">>, 1}, _} = bender_client:get_internal_id(IdempotentKey, WoodyContext).
+
+-spec snowflake(config()) ->
+    _.
+
+snowflake(_) ->
+    WoodyContext = woody_context:new(),
+    {ok, {_ID, _IntegerID}} = bender_client:gen_by_snowflake(WoodyContext).
+
+-spec sequence(config()) ->
+    _.
+
+sequence(_) ->
+    WoodyContext = woody_context:new(),
+    SequenceID = genlib:unique(),
+    {ok, {<<"1">>, 1}} = bender_client:gen_by_sequence(SequenceID, WoodyContext),
+    {ok, {<<"2">>, 2}} = bender_client:gen_by_sequence(SequenceID, WoodyContext),
+    {ok, {<<"4">>, 4}} = bender_client:gen_by_sequence(SequenceID, WoodyContext, #{minimum => 4}),
+    {ok, {<<"5">>, 5}} = bender_client:gen_by_sequence(SequenceID, WoodyContext).
+
+-spec constant(config()) ->
+    _.
+
+constant(_) ->
+    WoodyContext = woody_context:new(),
+    {ok, {<<"4">>, _IntegerID}} = bender_client:gen_by_constant(<<"4">>, WoodyContext).
 
 get_idempotent_key(ExternalID) ->
     bender_client:get_idempotent_key(<<"domain">>, <<"prefix">>, <<"party">>, ExternalID).
