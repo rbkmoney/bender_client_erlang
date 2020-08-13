@@ -8,7 +8,7 @@ TEMPLATES_PATH := .
 # Name of the service
 SERVICE_NAME := bender_client_erlang
 
-BUILD_IMAGE_TAG := 4536c31941b9c27c134e8daf0fd18848809219c9
+BUILD_IMAGE_TAG := 0c638a682f4735a65ef232b81ed872ba494574c3
 
 CALL_ANYWHERE := \
 	submodules \
