@@ -1,6 +1,6 @@
 -module(bender_client_woody).
 
--export([call/3]).
+-export([call/4]).
 
 -define(APP, bender_client).
 
@@ -11,19 +11,19 @@
     transport_opts => woody_client_thrift_http_transport:transport_options()
 }.
 
--spec call(woody:func(), [term()], woody_context:ctx()) ->
+-spec call(atom(), woody:func(), [term()], woody_context:ctx()) ->
     woody:result().
 
-call(Function, Args, Context0) ->
+call(Service, Function, Args, Context0) ->
     Deadline = get_service_deadline(),
     Context1 = set_deadline(Deadline, Context0),
     Retry = get_service_retry(Function),
     EventHandler = scoper_woody_event_handler,
-    call(Function, Args, Context1, EventHandler, Retry).
+    call(Service, Function, Args, Context1, EventHandler, Retry).
 
-call(Function, Args, Context, EventHandler, Retry) ->
+call(Service0, Function, Args, Context, EventHandler, Retry) ->
     Options = get_service_options(),
-    Service = {bender_thrift, 'Bender'},
+    Service = {bender_thrift, Service0},
     Request = {Service, Function, Args},
     try
         woody_client:call(
@@ -36,7 +36,7 @@ call(Function, Args, Context, EventHandler, Retry) ->
         when Class =:= resource_unavailable orelse Class =:= result_unknown
         ->
             NextRetry = apply_retry_strategy(Retry, Error, Context),
-            call(Function, Args, Context, EventHandler, NextRetry)
+            call(Service, Function, Args, Context, EventHandler, NextRetry)
     end.
 
 -spec get_service_options() ->
