@@ -28,7 +28,7 @@
 -define(SCHEMA_VER1, 1).
 
 -spec gen_by_snowflake(woody_context()) ->
-    {ok, binary()}.
+    {ok, {binary(), integer() | undefined}}.
 
 gen_by_snowflake(WoodyContext) ->
     Snowflake = {snowflake, #bender_SnowflakeSchema{}},
@@ -50,13 +50,13 @@ gen_by_snowflake(IdempotentKey, Hash, WoodyContext, CtxData) ->
     generate_id(IdempotentKey, Snowflake, Hash, WoodyContext, CtxData).
 
 -spec gen_by_sequence(binary(), woody_context()) ->
-    {ok, binary()}.
+    {ok, {binary(), integer() | undefined}}.
 
 gen_by_sequence(SequenceID, WoodyContext) ->
     gen_by_sequence(SequenceID, WoodyContext, #{}).
 
 -spec gen_by_sequence(binary(), woody_context(), sequence_params()) ->
-    {ok, binary()}.
+    {ok, {binary(), integer() | undefined}}.
 
 gen_by_sequence(SequenceID, WoodyContext, Params) ->
     Minimum = maps:get(minimum, Params, undefined),
@@ -93,7 +93,7 @@ gen_by_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData, Params) 
     generate_id(IdempotentKey, Sequence, Hash, WoodyContext, CtxData).
 
 -spec gen_by_constant(binary(), woody_context()) ->
-    {ok, binary()}.
+    {ok, {binary(), integer() | undefined}}.
 
 gen_by_constant(ConstantID, WoodyContext) ->
     Constant = {constant, #bender_ConstantSchema{internal_id = ConstantID}},
@@ -129,7 +129,7 @@ get_idempotent_key(Domain, Prefix, PartyID, ExternalID) ->
     {error, internal_id_not_found}.
 
 get_internal_id(ExternalID, WoodyContext) ->
-    case bender_client_woody:call('GetInternalID', [ExternalID], WoodyContext) of
+    case bender_client_woody:call('Bender', 'GetInternalID', [ExternalID], WoodyContext) of
         {ok, #bender_GetInternalIDResult{
             internal_id = InternalID,
             integer_internal_id = IntegerInternalID,
@@ -148,10 +148,9 @@ gen_external_id() ->
 
 generate_id(BenderSchema, WoodyContext) ->
     Args = [BenderSchema],
-    Result = case bender_client_woody:call('Generator', 'GenerateID', Args, WoodyContext) of
-        {ok, #bender_GeneratedID{id = ID, integer_id = IntegerID}} -> {ok, {ID, IntegerID}}
-    end,
-    Result.
+    {ok, #bender_GeneratedID{id = ID, integer_id = IntegerID}} =
+        bender_client_woody:call('Generator', 'GenerateID', Args, WoodyContext),
+    {ok, {ID, IntegerID}}.
 
 generate_id(Key, BenderSchema, Hash, WoodyContext, CtxData) ->
     Context = bender_msgp_marshalling:marshal(#{
@@ -160,7 +159,7 @@ generate_id(Key, BenderSchema, Hash, WoodyContext, CtxData) ->
         <<"context_data">>  => CtxData
     }),
     Args = [Key, BenderSchema, Context],
-    Result = case bender_client_woody:call('GenerateID', Args, WoodyContext) of
+    Result = case bender_client_woody:call('Bender', 'GenerateID', Args, WoodyContext) of
         {ok, #bender_GenerationResult{
             internal_id = InternalID,
             integer_internal_id = IntegerInternalID,

@@ -21,10 +21,9 @@ call(Service, Function, Args, Context0) ->
     EventHandler = scoper_woody_event_handler,
     call(Service, Function, Args, Context1, EventHandler, Retry).
 
-call(Service0, Function, Args, Context, EventHandler, Retry) ->
-    Options = get_service_options(),
-    Service = {bender_thrift, Service0},
-    Request = {Service, Function, Args},
+call(Service, Function, Args, Context, EventHandler, Retry) ->
+    Options = get_service_options(Service),
+    Request = {{bender_thrift, Service}, Function, Args},
     try
         woody_client:call(
             Request,
@@ -39,11 +38,11 @@ call(Service0, Function, Args, Context, EventHandler, Retry) ->
             call(Service, Function, Args, Context, EventHandler, NextRetry)
     end.
 
--spec get_service_options() ->
+-spec get_service_options(atom()) ->
     client_opts().
 
-get_service_options() ->
-    construct_opts(genlib_app:env(?APP, service_url)).
+get_service_options(Service) ->
+    construct_opts(maps:get(Service, genlib_app:env(?APP, services))).
 
 construct_opts(Opts = #{url := Url}) ->
     Opts#{url := genlib:to_binary(Url)};
