@@ -13,8 +13,7 @@
     gen_internal_id/1,
     get_internal_id/1,
     snowflake/1,
-    sequence /1,
-    constant /1
+    sequence /1
 ]).
 
 -type test_case_name()  :: atom().
@@ -36,8 +35,7 @@ groups() ->
         ]},
         {no_external_id, [], [
             snowflake,
-            sequence,
-            constant
+            sequence
         ]}
     ].
 
@@ -103,13 +101,6 @@ sequence(_) ->
     {ok, {<<"2">>, 2}} = bender_generator_client:gen_by_sequence(SequenceID, WoodyContext),
     {ok, {<<"4">>, 4}} = bender_generator_client:gen_by_sequence(SequenceID, WoodyContext, #{minimum => 4}),
     {ok, {<<"5">>, 5}} = bender_generator_client:gen_by_sequence(SequenceID, WoodyContext).
-
--spec constant(config()) ->
-    _.
-
-constant(_) ->
-    WoodyContext = woody_context:new(),
-    {ok, {<<"4">>, _IntegerID}} = bender_generator_client:gen_by_constant(<<"4">>, WoodyContext).
 
 get_idempotent_key(ExternalID) ->
     bender_client:get_idempotent_key(<<"domain">>, <<"prefix">>, <<"party">>, ExternalID).

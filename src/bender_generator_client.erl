@@ -3,7 +3,6 @@
 -export([gen_by_snowflake/1]).
 -export([gen_by_sequence/2]).
 -export([gen_by_sequence/3]).
--export([gen_by_constant/2]).
 
 
 -include_lib("bender_proto/include/bender_thrift.hrl").
@@ -34,13 +33,6 @@ gen_by_sequence(SequenceID, WoodyContext, Params) ->
         minimum = Minimum
     }},
     generate_id(Sequence, WoodyContext).
-
--spec gen_by_constant(binary(), woody_context()) ->
-    {ok, {binary(), integer() | undefined}}.
-
-gen_by_constant(ConstantID, WoodyContext) ->
-    Constant = {constant, #bender_ConstantSchema{internal_id = ConstantID}},
-    generate_id(Constant, WoodyContext).
 
 %%
 
