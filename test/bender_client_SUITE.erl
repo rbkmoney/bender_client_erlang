@@ -91,7 +91,7 @@ get_internal_id(_) ->
 
 snowflake(_) ->
     WoodyContext = woody_context:new(),
-    {ok, {_ID, _IntegerID}} = bender_client:gen_by_snowflake(WoodyContext).
+    {ok, {_ID, _IntegerID}} = generator_client:gen_by_snowflake(WoodyContext).
 
 -spec sequence(config()) ->
     _.
@@ -99,17 +99,17 @@ snowflake(_) ->
 sequence(_) ->
     WoodyContext = woody_context:new(),
     SequenceID = genlib:unique(),
-    {ok, {<<"1">>, 1}} = bender_client:gen_by_sequence(SequenceID, WoodyContext),
-    {ok, {<<"2">>, 2}} = bender_client:gen_by_sequence(SequenceID, WoodyContext),
-    {ok, {<<"4">>, 4}} = bender_client:gen_by_sequence(SequenceID, WoodyContext, #{minimum => 4}),
-    {ok, {<<"5">>, 5}} = bender_client:gen_by_sequence(SequenceID, WoodyContext).
+    {ok, {<<"1">>, 1}} = generator_client:gen_by_sequence(SequenceID, WoodyContext),
+    {ok, {<<"2">>, 2}} = generator_client:gen_by_sequence(SequenceID, WoodyContext),
+    {ok, {<<"4">>, 4}} = generator_client:gen_by_sequence(SequenceID, WoodyContext, #{minimum => 4}),
+    {ok, {<<"5">>, 5}} = generator_client:gen_by_sequence(SequenceID, WoodyContext).
 
 -spec constant(config()) ->
     _.
 
 constant(_) ->
     WoodyContext = woody_context:new(),
-    {ok, {<<"4">>, _IntegerID}} = bender_client:gen_by_constant(<<"4">>, WoodyContext).
+    {ok, {<<"4">>, _IntegerID}} = generator_client:gen_by_constant(<<"4">>, WoodyContext).
 
 get_idempotent_key(ExternalID) ->
     bender_client:get_idempotent_key(<<"domain">>, <<"prefix">>, <<"party">>, ExternalID).

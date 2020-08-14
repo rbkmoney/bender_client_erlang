@@ -13,26 +13,15 @@
 
 -export([gen_by_snowflake/4]).
 -export([gen_by_snowflake/3]).
--export([gen_by_snowflake/1]).
--export([gen_by_sequence/2]).
--export([gen_by_sequence/3]).
 -export([gen_by_sequence/4]).
 -export([gen_by_sequence/5]).
 -export([gen_by_sequence/6]).
--export([gen_by_constant/2]).
 -export([gen_by_constant/4]).
 -export([gen_by_constant/5]).
 -export([get_idempotent_key/4]).
 -export([get_internal_id/2]).
 
 -define(SCHEMA_VER1, 1).
-
--spec gen_by_snowflake(woody_context()) ->
-    {ok, {binary(), integer() | undefined}}.
-
-gen_by_snowflake(WoodyContext) ->
-    Snowflake = {snowflake, #bender_SnowflakeSchema{}},
-    generate_id(Snowflake, WoodyContext).
 
 -spec gen_by_snowflake(binary(), integer(), woody_context()) ->
     {ok,    {binary(), integer() | undefined}} |
@@ -48,23 +37,6 @@ gen_by_snowflake(IdempotentKey, Hash, WoodyContext) ->
 gen_by_snowflake(IdempotentKey, Hash, WoodyContext, CtxData) ->
     Snowflake = {snowflake, #bender_SnowflakeSchema{}},
     generate_id(IdempotentKey, Snowflake, Hash, WoodyContext, CtxData).
-
--spec gen_by_sequence(binary(), woody_context()) ->
-    {ok, {binary(), integer() | undefined}}.
-
-gen_by_sequence(SequenceID, WoodyContext) ->
-    gen_by_sequence(SequenceID, WoodyContext, #{}).
-
--spec gen_by_sequence(binary(), woody_context(), sequence_params()) ->
-    {ok, {binary(), integer() | undefined}}.
-
-gen_by_sequence(SequenceID, WoodyContext, Params) ->
-    Minimum = maps:get(minimum, Params, undefined),
-    Sequence = {sequence, #bender_SequenceSchema{
-        sequence_id = SequenceID,
-        minimum = Minimum
-    }},
-    generate_id(Sequence, WoodyContext).
 
 -spec gen_by_sequence(binary(), binary(), integer(), woody_context()) ->
     {ok,    {binary(), integer() | undefined}} |
@@ -92,12 +64,6 @@ gen_by_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData, Params) 
     }},
     generate_id(IdempotentKey, Sequence, Hash, WoodyContext, CtxData).
 
--spec gen_by_constant(binary(), woody_context()) ->
-    {ok, {binary(), integer() | undefined}}.
-
-gen_by_constant(ConstantID, WoodyContext) ->
-    Constant = {constant, #bender_ConstantSchema{internal_id = ConstantID}},
-    generate_id(Constant, WoodyContext).
 
 -spec gen_by_constant(binary(), binary(), integer(), woody_context()) ->
     {ok,    {binary(), integer() | undefined}} |
@@ -145,12 +111,6 @@ get_internal_id(ExternalID, WoodyContext) ->
 
 gen_external_id() ->
     genlib:unique().
-
-generate_id(BenderSchema, WoodyContext) ->
-    Args = [BenderSchema],
-    {ok, #bender_GeneratedID{id = ID, integer_id = IntegerID}} =
-        bender_client_woody:call('Generator', 'GenerateID', Args, WoodyContext),
-    {ok, {ID, IntegerID}}.
 
 generate_id(Key, BenderSchema, Hash, WoodyContext, CtxData) ->
     Context = bender_msgp_marshalling:marshal(#{
