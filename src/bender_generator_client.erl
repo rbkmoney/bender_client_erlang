@@ -1,4 +1,4 @@
--module(generator_client).
+-module(bender_generator_client).
 
 -export([gen_by_snowflake/1]).
 -export([gen_by_sequence/2]).
