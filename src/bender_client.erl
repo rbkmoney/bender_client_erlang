@@ -6,9 +6,11 @@
 -type context_data() :: #{binary() => term()}.
 -type bender_context() :: #{binary() => term()}.
 -type sequence_params() :: #{minimum => integer()}.
+-type generated_ids() :: {binary(), pos_integer() | undefined}.
 -export_type([
     bender_context/0,
-    context_data/0
+    context_data/0,
+    generated_ids/0
 ]).
 
 -export([gen_snowflake/4]).
@@ -24,37 +26,37 @@
 -define(SCHEMA_VER1, 1).
 
 -spec gen_snowflake(binary(), integer(), woody_context()) ->
-    {ok,    {binary(), integer() | undefined}} |
-    {error, {external_id_conflict, binary()}}.
+    {ok,    generated_ids()} |
+    {error, {external_id_conflict, generated_ids()}}.
 
 gen_snowflake(IdempotentKey, Hash, WoodyContext) ->
     gen_snowflake(IdempotentKey, Hash, WoodyContext, #{}).
 
 -spec gen_snowflake(binary(), integer(), woody_context(), context_data()) ->
-    {ok,    {binary(), integer() | undefined}} |
-    {error, {external_id_conflict, binary()}}.
+    {ok,    generated_ids()} |
+    {error, {external_id_conflict, generated_ids()}}.
 
 gen_snowflake(IdempotentKey, Hash, WoodyContext, CtxData) ->
     Snowflake = {snowflake, #bender_SnowflakeSchema{}},
     generate_id(IdempotentKey, Snowflake, Hash, WoodyContext, CtxData).
 
 -spec gen_sequence(binary(), binary(), integer(), woody_context()) ->
-    {ok,    {binary(), integer() | undefined}} |
-    {error, {external_id_conflict, binary()}}.
+    {ok,    generated_ids()} |
+    {error, {external_id_conflict, generated_ids()}}.
 
 gen_sequence(IdempotentKey, SequenceID, Hash, WoodyContext) ->
     gen_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, #{}).
 
 -spec gen_sequence(binary(), binary(), integer(), woody_context(), context_data()) ->
-    {ok,    {binary(), integer() | undefined}} |
-    {error, {external_id_conflict, binary()}}.
+    {ok,    generated_ids()} |
+    {error, {external_id_conflict, generated_ids()}}.
 
 gen_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData) ->
     gen_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData, #{}).
 
 -spec gen_sequence(binary(), binary(), integer(), woody_context(), context_data(), sequence_params()) ->
-    {ok,    {binary(), integer() | undefined}} |
-    {error, {external_id_conflict, binary()}}.
+    {ok,    generated_ids()} |
+    {error, {external_id_conflict, generated_ids()}}.
 
 gen_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData, Params) ->
     Minimum = maps:get(minimum, Params, undefined),
@@ -66,15 +68,15 @@ gen_sequence(IdempotentKey, SequenceID, Hash, WoodyContext, CtxData, Params) ->
 
 
 -spec gen_constant(binary(), binary(), integer(), woody_context()) ->
-    {ok,    {binary(), integer() | undefined}} |
-    {error, {external_id_conflict, binary()}}.
+    {ok,    generated_ids()} |
+    {error, {external_id_conflict, generated_ids()}}.
 
 gen_constant(IdempotentKey, ConstantID, Hash, WoodyContext) ->
     gen_constant(IdempotentKey, ConstantID, Hash, WoodyContext, #{}).
 
 -spec gen_constant(binary(), binary(), integer(), woody_context(), context_data()) ->
-    {ok,    {binary(), integer() | undefined}} |
-    {error, {external_id_conflict, binary()}}.
+    {ok,    generated_ids()} |
+    {error, {external_id_conflict, generated_ids()}}.
 
 gen_constant(IdempotentKey, ConstantID, Hash, WoodyContext, CtxData) ->
     Constant = {constant, #bender_ConstantSchema{internal_id = ConstantID}},
