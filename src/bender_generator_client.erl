@@ -37,7 +37,7 @@ gen_sequence(SequenceID, WoodyContext, Params) ->
 %%
 
 generate_id(BenderSchema, WoodyContext) ->
-    Args = [BenderSchema],
+    Args = {BenderSchema},
     {ok, #bender_GeneratedID{id = ID, integer_id = IntegerID}} =
         bender_client_woody:call('Generator', 'GenerateID', Args, WoodyContext),
     {ok, {ID, IntegerID}}.
