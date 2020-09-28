@@ -11,7 +11,7 @@
     transport_opts => woody_client_thrift_http_transport:transport_options()
 }.
 
--spec call(atom(), woody:func(), [term()], woody_context:ctx()) ->
+-spec call(atom(), woody:func(), tuple(), woody_context:ctx()) ->
     woody:result().
 
 call(Service, Function, Args, Context0) ->
