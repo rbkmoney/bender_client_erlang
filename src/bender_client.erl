@@ -97,7 +97,7 @@ get_idempotent_key(Domain, Prefix, PartyID, ExternalID) ->
     {error, internal_id_not_found}.
 
 get_internal_id(ExternalID, WoodyContext) ->
-    case bender_client_woody:call('Bender', 'GetInternalID', [ExternalID], WoodyContext) of
+    case bender_client_woody:call('Bender', 'GetInternalID', {ExternalID}, WoodyContext) of
         {ok, #bender_GetInternalIDResult{
             internal_id = InternalID,
             integer_internal_id = IntegerInternalID,
@@ -120,7 +120,7 @@ generate_id(Key, BenderSchema, Hash, WoodyContext, CtxData) ->
         <<"params_hash">> => Hash,
         <<"context_data">>  => CtxData
     }),
-    Args = [Key, BenderSchema, Context],
+    Args = {Key, BenderSchema, Context},
     Result = case bender_client_woody:call('Bender', 'GenerateID', Args, WoodyContext) of
         {ok, #bender_GenerationResult{
             internal_id = InternalID,
