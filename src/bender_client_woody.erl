@@ -6,14 +6,12 @@
 
 %%
 -type client_opts() :: #{
-    url            := woody:url(),
+    url := woody:url(),
     %% See hackney:request/5 for available transport options.
     transport_opts => woody_client_thrift_http_transport:transport_options()
 }.
 
--spec call(atom(), woody:func(), woody:args(), woody_context:ctx()) ->
-    woody:result().
-
+-spec call(atom(), woody:func(), woody:args(), woody_context:ctx()) -> woody:result().
 call(Service, Function, Args, Context0) ->
     Deadline = get_service_deadline(),
     Context1 = set_deadline(Deadline, Context0),
@@ -31,16 +29,14 @@ call(Service, Function, Args, Context, EventHandler, Retry) ->
             Context
         )
     catch
-        error:{woody_error, {_Source, Class, _Details}} = Error
-        when Class =:= resource_unavailable orelse Class =:= result_unknown
+        error:{woody_error, {_Source, Class, _Details}} = Error when
+            Class =:= resource_unavailable orelse Class =:= result_unknown
         ->
             NextRetry = apply_retry_strategy(Retry, Error, Context),
             call(Service, Function, Args, Context, EventHandler, NextRetry)
     end.
 
--spec get_service_options(atom()) ->
-    client_opts().
-
+-spec get_service_options(atom()) -> client_opts().
 get_service_options(Service) ->
     construct_opts(maps:get(Service, genlib_app:env(?APP, services))).
 
