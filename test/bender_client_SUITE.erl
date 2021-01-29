@@ -70,7 +70,7 @@ end_per_suite(Config) ->
 gen_internal_id(_) ->
     WoodyContext = woody_context:new(),
     IdempotentKey = get_idempotent_key(?EXTERNAL_ID),
-    {ok, {<<"1">>, 1}} = bender_client:gen_sequence(IdempotentKey, <<"SEQ">>, <<"HASH">>, WoodyContext).
+    {ok, {<<"1">>, 1}} = bender_client:gen_sequence(IdempotentKey, <<"SEQ">>, erlang:phash2(<<"HASH">>), WoodyContext).
 
 -spec get_internal_id(config()) -> _.
 get_internal_id(_) ->
