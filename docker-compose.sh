@@ -16,10 +16,11 @@ services:
     mem_limit: 256M
 
   machinegun:
-    image: dr2.rbkmoney.com/rbkmoney/machinegun:aec434f47029dbd81762e10de04c9422e3c93e5e
+    image: dr2.rbkmoney.com/rbkmoney/machinegun:0da2ffc23221e1e3f8557b03d48d11d2dd18fac0
     command: /opt/machinegun/bin/machinegun foreground
     volumes:
       - ./test/machinegun/config.yaml:/opt/machinegun/etc/config.yaml
+      - ./test/machinegun/cookie:/opt/machinegun/etc/cookie
     healthcheck:
       test: "curl http://localhost:8022/"
       interval: 5s
@@ -27,7 +28,7 @@ services:
       retries: 20
 
   bender:
-    image: dr2.rbkmoney.com/rbkmoney/bender:b392d600186e8de842db5f35ae2e53dda046ddd6
+    image: dr2.rbkmoney.com/rbkmoney/bender:cd0ee8faae41f22a40ea119337be2a842e3e9cd8
     command: /opt/bender/bin/bender foreground
     healthcheck:
       test: "curl http://localhost:8022/"

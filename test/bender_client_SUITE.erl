@@ -18,7 +18,7 @@
 
 -type test_case_name() :: atom().
 
--spec all() -> [test_case_name()].
+-spec all() -> [{group, test_case_name()}].
 all() ->
     [
         {group, all_tests},
@@ -59,7 +59,7 @@ init_per_suite(Config) ->
 
 -spec end_per_suite(config()) -> _.
 end_per_suite(Config) ->
-    [application:stop(App) || App <- proplists:get_value(apps, Config)],
+    _ = [application:stop(App) || App <- proplists:get_value(apps, Config)],
     Config.
 
 %%
