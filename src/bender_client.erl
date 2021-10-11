@@ -35,7 +35,7 @@
 gen_snowflake(IdempotentKey, WoodyContext) ->
     gen_snowflake(IdempotentKey, WoodyContext, undefined).
 
--spec gen_snowflake(binary(), woody_context(), bender_context()) -> result().
+-spec gen_snowflake(binary(), woody_context(), bender_context() | undefined) -> result().
 gen_snowflake(IdempotentKey, WoodyContext, Context) ->
     Snowflake = {snowflake, #bender_SnowflakeSchema{}},
     gen_id(IdempotentKey, Snowflake, WoodyContext, Context).
@@ -44,11 +44,11 @@ gen_snowflake(IdempotentKey, WoodyContext, Context) ->
 gen_sequence(IdempotentKey, SequenceID, WoodyContext) ->
     gen_sequence(IdempotentKey, SequenceID, WoodyContext, undefined).
 
--spec gen_sequence(binary(), binary(), woody_context(), bender_context()) -> result().
+-spec gen_sequence(binary(), binary(), woody_context(), bender_context() | undefined) -> result().
 gen_sequence(IdempotentKey, SequenceID, WoodyContext, Context) ->
     gen_sequence(IdempotentKey, SequenceID, WoodyContext, Context, #{}).
 
--spec gen_sequence(binary(), binary(), woody_context(), bender_context(), sequence_params()) -> result().
+-spec gen_sequence(binary(), binary(), woody_context(), bender_context() | undefined, sequence_params()) -> result().
 gen_sequence(IdempotentKey, SequenceID, WoodyContext, Context, Params) ->
     Minimum = maps:get(minimum, Params, undefined),
     Sequence =
@@ -62,7 +62,7 @@ gen_sequence(IdempotentKey, SequenceID, WoodyContext, Context, Params) ->
 gen_constant(IdempotentKey, ConstantID, WoodyContext) ->
     gen_constant(IdempotentKey, ConstantID, WoodyContext, undefined).
 
--spec gen_constant(binary(), binary(), woody_context(), bender_context()) -> result().
+-spec gen_constant(binary(), binary(), woody_context(), bender_context() | undefined) -> result().
 gen_constant(IdempotentKey, ConstantID, WoodyContext, Context) ->
     Constant = {constant, #bender_ConstantSchema{internal_id = ConstantID}},
     gen_id(IdempotentKey, Constant, WoodyContext, Context).
@@ -98,7 +98,7 @@ gen_external_id() ->
 gen_id(Key, BenderSchema, WoodyContext) ->
     gen_id(Key, BenderSchema, WoodyContext, undefined).
 
--spec gen_id(binary(), bender_schema(), woody_context(), bender_context()) -> result().
+-spec gen_id(binary(), bender_schema(), woody_context(), bender_context() | undefined) -> result().
 gen_id(Key, BenderSchema, WoodyContext, Context) ->
     MarshalledContext = bender_msgp_marshalling:marshal(Context),
     Args = {Key, BenderSchema, MarshalledContext},

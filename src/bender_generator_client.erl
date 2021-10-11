@@ -9,7 +9,7 @@
 -type woody_context() :: woody_context:ctx().
 -type sequence_params() :: #{minimum => integer()}.
 
--spec gen_snowflake(woody_context()) -> {ok, binary()}.
+-spec gen_snowflake(woody_context()) -> binary().
 gen_snowflake(WoodyContext) ->
     Snowflake = {snowflake, #bender_SnowflakeSchema{}},
     generate_id(Snowflake, WoodyContext).
