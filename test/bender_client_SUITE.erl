@@ -87,7 +87,8 @@ get_internal_id(_) ->
 sequence_w_context(_) ->
     WoodyContext = woody_context:new(),
     IdempotentKey = get_idempotent_key(?EXTERNAL_ID_2),
-    {ok, <<"2">>} = bender_client:gen_sequence(IdempotentKey, <<"SEQ">>, WoodyContext, #{<<"key">> => <<"my_context">>}).
+    Context = #{<<"key">> => <<"my_context">>},
+    {ok, <<"2">>} = bender_client:gen_sequence(IdempotentKey, <<"SEQ">>, WoodyContext, Context).
 
 -spec get_internal_id_w_context(config()) -> _.
 get_internal_id_w_context(_) ->
