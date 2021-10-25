@@ -29,8 +29,6 @@
 -export([get_idempotent_key/4]).
 -export([get_internal_id/2]).
 
--define(SCHEMA_VER1, 1).
-
 -spec gen_snowflake(binary(), woody_context()) -> result().
 gen_snowflake(IdempotentKey, WoodyContext) ->
     gen_snowflake(IdempotentKey, WoodyContext, undefined).
@@ -110,7 +108,7 @@ gen_id(Key, BenderSchema, WoodyContext, Context) ->
             {ok, InternalID};
         {ok, #bender_GenerationResult{
             internal_id = InternalID,
-            context = Context
+            context = SavedContext
         }} ->
-            {ok, InternalID, Context}
+            {ok, InternalID, SavedContext}
     end.
