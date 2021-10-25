@@ -110,5 +110,5 @@ gen_id(Key, BenderSchema, WoodyContext, Context) ->
             internal_id = InternalID,
             context = SavedContext
         }} ->
-            {ok, InternalID, SavedContext}
+            {ok, InternalID, bender_msgp_marshalling:unmarshal(SavedContext)}
     end.
